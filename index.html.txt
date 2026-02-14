@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrendGlobe AI | Geleceği Keşfet</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { darkBg: '#020617', lightBg: '#f8fafc' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, color 0.3s; }
+        .ai-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
+        .glass { backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .dark .glass { background: rgba(255, 255, 255, 0.03); }
+        .light .glass { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.08); }
+        .trend-card:hover { transform: translateY(-8px); transition: all 0.3s; }
+        video::-webkit-media-controls { display:none !important; }
+    </style>
+</head>
+<body class="bg-lightBg text-slate-900 dark:bg-darkBg dark:text-white">
+
+    <nav class="p-5 flex justify-between items-center border-b border-black/5 dark:border-white/5 sticky top-0 z-50 bg-white/80 dark:bg-[#020617]/90 backdrop-blur-md">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 ai-gradient rounded-xl flex items-center justify-center font-bold text-white">T</div>
+            <span class="text-2xl font-extrabold tracking-tighter uppercase">TrendGlobe <span class="text-indigo-500">AI</span></span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <select id="langSelect" onchange="changeLanguage()" class="bg-transparent border border-gray-500/30 rounded-lg px-2 py-1 text-sm font-bold outline-none cursor-pointer">
+                <option value="tr">TR 🇹🇷</option>
+                <option value="en">EN 🇺🇸</option>
+            </select>
+            <button onclick="toggleTheme()" class="p-2 rounded-xl bg-gray-500/10 hover:bg-gray-500/20 transition">
+                <span id="themeIcon">🌙</span>
+            </button>
+            <button class="ai-gradient px-6 py-2 rounded-full text-sm font-bold text-white shadow-lg">PRO</button>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-6 py-16 text-center">
+        <h1 id="heroTitle" class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-none">
+            Geleceği <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">AI</span> Gücüyle Keşfet
+        </h1>
+        <p id="heroDesc" class="text-slate-500 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed italic">
+            TikTok ve sosyal medya trendlerini henüz patlamadan, yapay zeka analizleriyle yakalayın.
+        </p>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pb-20">
+        <div id="trendGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+            </div>
+    </main>
+
+    <footer class="border-t border-black/5 dark:border-white/5 bg-gray-100 dark:bg-black/20 py-16 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div>
+                <h4 id="legalTitle1" class="text-sm font-bold uppercase tracking-widest text-indigo-500 mb-4">⚠️ SORUMLULUK REDDİ</h4>
+                <p id="legalContent1" class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                    TrendGlobe AI tarafından sunulan veriler yalnızca bilgilendirme amaçlıdır. Yatırım tavsiyesi niteliği taşımaz. AI analizlerinde hata payı olabilir; bu bilgilere dayanarak alınan kararlardan doğabilecek zararlardan platformumuz sorumlu tutulamaz.
+                </p>
+            </div>
+
+            <div>
+                <h4 id="legalTitle2" class="text-sm font-bold uppercase tracking-widest text-indigo-500 mb-4">⚖️ HUKUKİ DAYANAKLAR</h4>
+                <p id="legalContent2" class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                    Sitemiz, 5651 sayılı Kanun kapsamında "Yer Sağlayıcı" olarak hizmet vermektedir. İçerikler kamuya açık kaynaklardan derlenmiştir. Fikri mülkiyet ihlalleri için lütfen iletişim kanallarımızdan bize ulaşın.
+                </p>
+            </div>
+        </div>
+        <div class="mt-12 pt-8 border-t border-black/5 dark:border-white/5 text-center text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+            &copy; 2024 TRENDGLOBE AI. GLOBAL TREND INTELLIGENCE UNIT.
+        </div>
+    </footer>
+
+    <script>
+        // --- DİL VE TEMA YÖNETİMİ ---
+        const translations = {
+            tr: {
+                heroTitle: 'Geleceği <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">AI</span> Gücüyle Keşfet',
+                heroDesc: 'TikTok ve sosyal medya trendlerini henüz patlamadan, yapay zeka analizleriyle yakalayın.',
+                btnText: 'Analizi İncele',
+                legalTitle1: '⚠️ SORUMLULUK REDDİ',
+                legalContent1: 'TrendGlobe AI tarafından sunulan veriler yalnızca bilgilendirme amaçlıdır. Yatırım tavsiyesi niteliği taşımaz. AI analizlerinde hata payı olabilir; bu bilgilere dayanarak alınan kararlardan doğabilecek zararlardan platformumuz sorumlu tutulamaz.',
+                legalTitle2: '⚖️ HUKUKİ DAYANAKLAR',
+                legalContent2: 'Sitemiz, 5651 sayılı Kanun kapsamında "Yer Sağlayıcı" olarak hizmet vermektedir. İçerikler kamuya açık kaynaklardan derlenmiştir.'
+            },
+            en: {
+                heroTitle: 'See the Future with <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">AI</span> Power',
+                heroDesc: 'Catch TikTok and social media trends before they explode with AI-powered insights.',
+                btnText: 'View Analysis',
+                legalTitle1: '⚠️ DISCLAIMER',
+                legalContent1: 'Data provided by TrendGlobe AI is for informational purposes only. It does not constitute investment advice. AI analyses may contain errors; we are not responsible for decisions made based on this info.',
+                legalTitle2: '⚖️ LEGAL BASIS',
+                legalContent2: 'Our site acts as a "Hosting Provider" under legal frameworks. Content is aggregated from public sources.'
+            }
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const isDark = html.classList.toggle('dark');
+            html.classList.toggle('light', !isDark);
+            icon.innerText = isDark ? '🌙' : '☀️';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById('langSelect').value;
+            const t = translations[lang];
+            document.getElementById('heroTitle').innerHTML = t.heroTitle;
+            document.getElementById('heroDesc').innerText = t.heroDesc;
+            document.getElementById('legalTitle1').innerText = t.legalTitle1;
+            document.getElementById('legalContent1').innerText = t.legalContent1;
+            document.getElementById('legalTitle2').innerText = t.legalTitle2;
+            document.getElementById('legalContent2').innerText = t.legalContent2;
+            localStorage.setItem('lang', lang);
+            fetchTrends();
+        }
+
+        // --- SUPABASE BAĞLANTISI ---
+        const SUPABASE_URL = 'https://vcd6z_anjrrylfklscn.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function fetchTrends() {
+            const grid = document.getElementById('trendGrid');
+            const lang = localStorage.getItem('lang') || 'tr';
+            
+            const { data: trends, error } = await _supabase.from('trends').select('*').order('created_at', { ascending: false });
+
+            if (trends) {
+                grid.innerHTML = trends.map(t => `
+                    <div class="trend-card glass rounded-[2.5rem] p-5 flex flex-col group border-black/5 dark:border-white/5 shadow-2xl">
+                        <div class="relative aspect-[9/12] rounded-[2rem] overflow-hidden mb-6 bg-black/20">
+                            <video src="${t.video_url}" class="w-full h-full object-cover" loop muted onmouseover="this.play()" onmouseout="this.pause()" playsinline></video>
+                            <div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase">${t.category}</div>
+                        </div>
+                        <h3 class="text-2xl font-black mb-3 tracking-tight">${t.title}</h3>
+                        <div class="bg-indigo-500/5 dark:bg-indigo-500/10 p-4 rounded-2xl mb-6">
+                            <p class="text-xs text-indigo-500 font-bold uppercase tracking-widest mb-1">AI INSIGHT</p>
+                            <p class="text-sm italic text-slate-600 dark:text-gray-300">"${t.ai_analysis}"</p>
+                        </div>
+                        <button class="w-full py-4 rounded-2xl bg-indigo-500 text-white font-bold hover:bg-indigo-600 transition shadow-lg shadow-indigo-500/30">
+                            ${translations[lang].btnText}
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.className = savedTheme;
+            document.getElementById('themeIcon').innerText = savedTheme === 'dark' ? '🌙' : '☀️';
+            changeLanguage(); // Başlangıç dilini ayarla
+        };
+    </script>
+</body>
+</html>

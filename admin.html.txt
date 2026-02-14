@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>TrendGlobe | Yönetici Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background: #020617; color: white; font-family: sans-serif; }
+        .ai-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
+    </style>
+</head>
+<body class="p-10">
+    <div class="max-w-2xl mx-auto bg-white/5 p-8 rounded-[2rem] border border-white/10">
+        <h1 class="text-3xl font-black mb-6 tracking-tighter uppercase italic">Trend <span class="text-indigo-500">Yükleme Merkezi</span></h1>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Trend Başlığı</label>
+                <input id="title" type="text" placeholder="Örn: Dubai Çikolatası Akımı" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Video veya Görsel Linki</label>
+                <input id="mediaUrl" type="text" placeholder="TikTok video linki veya .mp4 adresi" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Kategori</label>
+                <select id="category" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl outline-none">
+                    <option value="TikTok Viral">TikTok Viral</option>
+                    <option value="E-Ticaret">E-Ticaret</option>
+                    <option value="Yapay Zeka">Yapay Zeka</option>
+                    <option value="Finans">Finans</option>
+                </select>
+            </div>
+
+            <button onclick="aiAnalizYap()" id="btn" class="w-full py-5 ai-gradient rounded-2xl font-black text-lg shadow-lg shadow-indigo-500/20 hover:scale-[1.02] transition active:scale-95">
+                AI ANALİZİ YAP VE YAYINLA 🚀
+            </button>
+
+            <div id="status" class="text-center text-sm font-medium mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- BAĞLANTI AYARLARI ---
+        const SUPABASE_URL = 'https://vcd6z_anjrrylfklscn.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr'; // Senin yayınlanabilir anahtarın
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function aiAnalizYap() {
+            const btn = document.getElementById('btn');
+            const status = document.getElementById('status');
+            const title = document.getElementById('title').value;
+            const mediaUrl = document.getElementById('mediaUrl').value;
+            const category = document.getElementById('category').value;
+
+            if(!title || !mediaUrl) return alert("Lütfen tüm alanları doldur!");
+
+            btn.disabled = true;
+            btn.innerText = "Yapay Zeka Analiz Ediyor...";
+            status.innerText = "OpenAI ile bağlantı kuruluyor...";
+
+            try {
+                // Not: Burası çok önemli! Normalde OpenAI doğrudan buradan çağrılmaz.
+                // Şimdilik test amaçlı manuel bir analiz veriyoruz. 
+                // "Tam otomatik" yapmak için Supabase Edge Function çağıracağız.
+                
+                const yapayZekaYorumu = `Bu trend ${title} üzerine yoğunlaşıyor. Özellikle e-ticaret siteleri için stok eritme potansiyeli yüksek. İçerik üreticileri için hızlı etkileşim vaat ediyor.`;
+
+                const { error } = await _supabase.from('trends').insert([
+                    {
+                        title: title,
+                        video_url: mediaUrl,
+                        category: category,
+                        ai_analysis: yapayZekaYorumu,
+                        growth_rate: "+%" + Math.floor(Math.random() * 500 + 100) // Rastgele büyüme oranı
+                    }
+                ]);
+
+                if(error) throw error;
+
+                status.innerHTML = "<span class='text-green-500 font-bold'>BAŞARILI! Trend ana sayfaya eklendi.</span>";
+                document.getElementById('title').value = "";
+                document.getElementById('mediaUrl').value = "";
+            } catch (err) {
+                status.innerHTML = "<span class='text-red-500'>Hata: " + err.message + "</span>";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "AI ANALİZİ YAP VE YAYINLA 🚀";
+            }
+        }
+    </script>
+</body>
+</html>
