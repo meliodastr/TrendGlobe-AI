@@ -3,42 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrendGlobe | AI Yönetim Merkezi</title>
+    <title>TrendGlobe | Kontrol Merkezi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { background: #020617; color: white; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .ai-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        input, select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
-        .loading-spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background: #020617; color: white; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .input-style { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1rem; width: 100%; color: white; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: #6366f1; background: rgba(255,255,255,0.1); }
+        .btn-ai { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); transition: 0.3s; }
+        .btn-ai:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); }
+        .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
-<body class="p-6 md:p-12 flex items-center justify-center min-h-screen">
-
-    <div class="max-w-2xl w-full glass p-8 md:p-12 rounded-[3rem] shadow-2xl">
+<body class="p-6 md:p-20">
+    <div class="max-w-xl mx-auto glass p-10 rounded-[3rem]">
         <div class="mb-10 text-center">
-            <h1 class="text-4xl font-black italic tracking-tighter uppercase">
-                AI <span class="text-indigo-500">KONTROL</span> PANELI
-            </h1>
-            <p class="text-gray-400 mt-2">Yeni trendi girin, yapay zeka analiz edip yayına alsın.</p>
+            <h1 class="text-3xl font-black italic uppercase tracking-tighter">Trend <span class="text-indigo-500">Yönetimi</span></h1>
+            <p class="text-gray-400 text-sm mt-2">Yapay zeka analizini başlat ve dünyayla paylaş.</p>
         </div>
 
-        <form id="trendForm" class="space-y-6">
+        <div class="space-y-6">
             <div>
-                <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-widest">Trend Konusu</label>
-                <input type="text" id="title" placeholder="Örn: AI Portrait Dance" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
+                <label class="text-xs font-bold text-gray-500 uppercase ml-2 mb-2 block">Trend Başlığı</label>
+                <input id="title" type="text" placeholder="Örn: AI Agent Devrimi" class="input-style">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-widest">Video veya Görsel URL</label>
-                <input type="url" id="mediaUrl" placeholder="https://tiktok.com/... veya .mp4 linki" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
-                <p class="text-[10px] text-gray-500 mt-2 px-2">* TikTok video linki veya doğrudan .mp4 / .jpg linki yapıştırın.</p>
+                <label class="text-xs font-bold text-gray-500 uppercase ml-2 mb-2 block">Video URL (.mp4)</label>
+                <input id="mediaUrl" type="text" placeholder="https://site.com/video.mp4" class="input-style">
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-widest">Kategori</label>
-                <select id="category" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                    <option value="Teknoloji">Tek
+            <button id="mainBtn" onclick="trendYayinla()" class="btn-ai w-full py-5 rounded-2xl font-black text-lg shadow-xl">
+                TRENDİ ANALİZ ET VE YAYINLA
+            </button>
+
+            <div id="status" class="mt-6 p-4 rounded-xl text-center text-sm font-medium hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        const _sb = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr');
+
+        async function trendYayinla() {
+            const title = document.getElementById('title').value;
+            const mediaUrl = document.getElementById('mediaUrl').value;
+            const btn = document.getElementById('mainBtn');
+            const status = document.getElementById('status');
+
+            if(!title || !mediaUrl) {
+                alert("Lütfen tüm alanları doldurun!");
+                return;
+            }
+
+            // Arayüzü kilitle
+            btn.disabled = true;
+            status.classList.remove('hidden', 'bg-red-500/20', 'bg-green-500/20');
+            status.classList.add('bg-indigo-500/20', 'text-indigo-300');
+            status.innerText = "🤖 Yapay Zeka trendi inceliyor, lütfen bekleyin...";
+
+            try {
+                // 1. ADIM: Vercel API üzerinden OpenAI Analizi Al
+                const aiRes = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: title, category: 'Teknoloji' })
+                });
+
+                if(!aiRes.ok) throw new Error("Vercel API'ye ulaşılamadı. analyze.js dosyanı kontrol et.");
+                const aiData = await aiRes.json();
+
+                // 2. ADIM: Supabase'e Kaydet
+                const { error } = await _sb.from('trends').insert([{
+                    title: title,
+                    video_url: mediaUrl,
+                    ai_analysis: aiData.analysis,
+                    category: 'Teknoloji'
+                }]);
+
+                if(error) throw error;
+
+                // Başarı
+                status.classList.replace('text-indigo-300', 'text-green-400');
+                status.innerText = "✅ Başarılı! Trend ana sayfada yayına alındı.";
+                document.getElementById('title').value = "";
+                document.getElementById('mediaUrl').value = "";
+
+            } catch (err) {
+                status.classList.replace('text-indigo-300', 'text-red-400');
+                status.innerText = "❌ HATA: " + err.message;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
