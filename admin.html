@@ -1,38 +1,72 @@
-<script>
-    const _supabase = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr');
-
-    async function trendEkle() {
-        const title = document.getElementById('title').value;
-        const mediaUrl = document.getElementById('mediaUrl').value;
-        const status = document.getElementById('status');
-
-        if(!title || !mediaUrl) return alert("Boş alan bırakma!");
-
-        status.innerText = "🤖 AI Analiz Ediyor...";
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>TrendGlobe | Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-2xl">
+        <h1 class="text-2xl font-black mb-8 text-center text-indigo-500 italic">YÖNETİCİ PANELİ</h1>
         
-        try {
-            // 1. ADIM: OpenAI Analizini Al
-            const res = await fetch('/api/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, category: 'Global' })
-            });
+        <div class="space-y-5">
+            <input id="t" type="text" placeholder="Trend Başlığı" class="w-full bg-slate-800 border-none p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+            <input id="v" type="text" placeholder="Video URL (.mp4)" class="w-full bg-slate-800 border-none p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
             
-            const data = await res.json();
-            if(!res.ok) throw new Error(data.error || "API bağlantı hatası");
+            <button id="btn" onclick="gonder()" class="w-full bg-indigo-600 hover:bg-indigo-500 p-4 rounded-2xl font-black transition-all shadow-lg shadow-indigo-500/20">
+                ANALİZ ET VE YAYINLA
+            </button>
+            
+            <p id="status" class="text-center text-sm font-bold min-h-[20px]"></p>
+        </div>
+    </div>
 
-            // 2. ADIM: Supabase'e Kaydet
-            const { error } = await _supabase.from('trends').insert([{
-                title: title,
-                video_url: mediaUrl,
-                ai_analysis: data.analysis,
-                category: 'Global'
-            }]);
+    <script>
+        const _sb = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr');
 
-            if(error) throw error;
-            status.innerText = "✅ Başarıyla yüklendi!";
-        } catch (err) {
-            status.innerText = "❌ HATA: " + err.message;
+        async function gonder() {
+            const t = document.getElementById('t').value;
+            const v = document.getElementById('v').value;
+            const s = document.getElementById('status');
+            const b = document.getElementById('btn');
+
+            if(!t || !v) return alert("Alanları doldur!");
+
+            b.disabled = true;
+            s.innerText = "🤖 AI ANALİZİ BAŞLADI...";
+            s.className = "text-center text-sm font-bold text-indigo-400 animate-pulse";
+
+            try {
+                // API Yolu (api/analyze.js dosyana gider)
+                const res = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ title: t })
+                });
+
+                const aiData = await res.json();
+                if(!res.ok) throw new Error(aiData.error || "API Hatası");
+
+                // Supabase Kaydı
+                const { error } = await _sb.from('trends').insert([{
+                    title: t,
+                    video_url: v,
+                    ai_analysis: aiData.analysis,
+                    category: 'Global'
+                }]);
+
+                if(error) throw error;
+
+                s.innerText = "✅ BAŞARIYLA YAYINLANDI!";
+                s.className = "text-center text-sm font-bold text-green-400";
+            } catch (err) {
+                s.innerText = "❌ HATA: " + err.message;
+                s.className = "text-center text-sm font-bold text-red-500";
+            } finally {
+                b.disabled = false;
+            }
         }
-    }
-</script>
+    </script>
+</body>
+</html>
