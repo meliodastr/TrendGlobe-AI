@@ -1,101 +1,38 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrendGlobe | Kontrol Merkezi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { background: #020617; color: white; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .input-style { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1rem; width: 100%; color: white; outline: none; transition: 0.3s; }
-        .input-style:focus { border-color: #6366f1; background: rgba(255,255,255,0.1); }
-        .btn-ai { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); transition: 0.3s; }
-        .btn-ai:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4); }
-        .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
-    </style>
-</head>
-<body class="p-6 md:p-20">
-    <div class="max-w-xl mx-auto glass p-10 rounded-[3rem]">
-        <div class="mb-10 text-center">
-            <h1 class="text-3xl font-black italic uppercase tracking-tighter">Trend <span class="text-indigo-500">Yönetimi</span></h1>
-            <p class="text-gray-400 text-sm mt-2">Yapay zeka analizini başlat ve dünyayla paylaş.</p>
-        </div>
+<script>
+    const _supabase = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr');
 
-        <div class="space-y-6">
-            <div>
-                <label class="text-xs font-bold text-gray-500 uppercase ml-2 mb-2 block">Trend Başlığı</label>
-                <input id="title" type="text" placeholder="Örn: AI Agent Devrimi" class="input-style">
-            </div>
+    async function trendEkle() {
+        const title = document.getElementById('title').value;
+        const mediaUrl = document.getElementById('mediaUrl').value;
+        const status = document.getElementById('status');
 
-            <div>
-                <label class="text-xs font-bold text-gray-500 uppercase ml-2 mb-2 block">Video URL (.mp4)</label>
-                <input id="mediaUrl" type="text" placeholder="https://site.com/video.mp4" class="input-style">
-            </div>
+        if(!title || !mediaUrl) return alert("Boş alan bırakma!");
 
-            <button id="mainBtn" onclick="trendYayinla()" class="btn-ai w-full py-5 rounded-2xl font-black text-lg shadow-xl">
-                TRENDİ ANALİZ ET VE YAYINLA
-            </button>
+        status.innerText = "🤖 AI Analiz Ediyor...";
+        
+        try {
+            // 1. ADIM: OpenAI Analizini Al
+            const res = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, category: 'Global' })
+            });
+            
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.error || "API bağlantı hatası");
 
-            <div id="status" class="mt-6 p-4 rounded-xl text-center text-sm font-medium hidden"></div>
-        </div>
-    </div>
+            // 2. ADIM: Supabase'e Kaydet
+            const { error } = await _supabase.from('trends').insert([{
+                title: title,
+                video_url: mediaUrl,
+                ai_analysis: data.analysis,
+                category: 'Global'
+            }]);
 
-    <script>
-        const _sb = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr');
-
-        async function trendYayinla() {
-            const title = document.getElementById('title').value;
-            const mediaUrl = document.getElementById('mediaUrl').value;
-            const btn = document.getElementById('mainBtn');
-            const status = document.getElementById('status');
-
-            if(!title || !mediaUrl) {
-                alert("Lütfen tüm alanları doldurun!");
-                return;
-            }
-
-            // Arayüzü kilitle
-            btn.disabled = true;
-            status.classList.remove('hidden', 'bg-red-500/20', 'bg-green-500/20');
-            status.classList.add('bg-indigo-500/20', 'text-indigo-300');
-            status.innerText = "🤖 Yapay Zeka trendi inceliyor, lütfen bekleyin...";
-
-            try {
-                // 1. ADIM: Vercel API üzerinden OpenAI Analizi Al
-                const aiRes = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: title, category: 'Teknoloji' })
-                });
-
-                if(!aiRes.ok) throw new Error("Vercel API'ye ulaşılamadı. analyze.js dosyanı kontrol et.");
-                const aiData = await aiRes.json();
-
-                // 2. ADIM: Supabase'e Kaydet
-                const { error } = await _sb.from('trends').insert([{
-                    title: title,
-                    video_url: mediaUrl,
-                    ai_analysis: aiData.analysis,
-                    category: 'Teknoloji'
-                }]);
-
-                if(error) throw error;
-
-                // Başarı
-                status.classList.replace('text-indigo-300', 'text-green-400');
-                status.innerText = "✅ Başarılı! Trend ana sayfada yayına alındı.";
-                document.getElementById('title').value = "";
-                document.getElementById('mediaUrl').value = "";
-
-            } catch (err) {
-                status.classList.replace('text-indigo-300', 'text-red-400');
-                status.innerText = "❌ HATA: " + err.message;
-            } finally {
-                btn.disabled = false;
-            }
+            if(error) throw error;
+            status.innerText = "✅ Başarıyla yüklendi!";
+        } catch (err) {
+            status.innerText = "❌ HATA: " + err.message;
         }
-    </script>
-</body>
-</html>
+    }
+</script>
