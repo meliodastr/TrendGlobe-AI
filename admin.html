@@ -3,119 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrendGlobe | Yönetici Paneli</title>
+    <title>TrendGlobe | AI Yönetim Merkezi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { background: #020617; color: white; font-family: sans-serif; }
+        body { background: #020617; color: white; font-family: 'Plus Jakarta Sans', sans-serif; }
         .ai-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        input, select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
+        .loading-spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="p-6 md:p-12">
-    <div class="max-w-2xl mx-auto glass p-8 rounded-[2.5rem]">
-        <h1 class="text-3xl font-black mb-2 tracking-tighter uppercase italic">
-            Trend <span class="text-indigo-500">Yükleme Merkezi</span>
-        </h1>
-        <p class="text-gray-400 text-sm mb-8 font-medium italic">Yapay zeka destekli trend analizi ve yayınlama paneli.</p>
-        
-        <div class="space-y-6">
-            <div>
-                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Trend Başlığı</label>
-                <input id="title" type="text" placeholder="Örn: Minimalist Ev Ofis Akımı" 
-                    class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl outline-none focus:border-indigo-500 transition">
-            </div>
+<body class="p-6 md:p-12 flex items-center justify-center min-h-screen">
 
-            <div>
-                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Video veya Görsel URL (.mp4 veya .jpg)</label>
-                <input id="mediaUrl" type="text" placeholder="https://v16-webapp.tiktok.com/..." 
-                    class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl outline-none focus:border-indigo-500 transition">
-            </div>
-
-            <div>
-                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">Kategori</label>
-                <select id="category" class="w-full bg-black/40 border border-white/10 p-4 rounded-2xl outline-none cursor-pointer">
-                    <option value="TikTok Viral">TikTok Viral</option>
-                    <option value="E-Ticaret">E-Ticaret</option>
-                    <option value="Yapay Zeka">Yapay Zeka</option>
-                    <option value="Finans">Finans</option>
-                </select>
-            </div>
-
-            <button onclick="aiAnalizYap()" id="btn" 
-                class="w-full py-5 ai-gradient rounded-3xl font-black text-lg shadow-xl shadow-indigo-500/20 hover:scale-[1.01] transition active:scale-95">
-                AI ANALİZİ YAP VE YAYINLA 🚀
-            </button>
-
-            <div id="status" class="text-center text-sm font-bold min-h-[20px] pt-2"></div>
+    <div class="max-w-2xl w-full glass p-8 md:p-12 rounded-[3rem] shadow-2xl">
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl font-black italic tracking-tighter uppercase">
+                AI <span class="text-indigo-500">KONTROL</span> PANELI
+            </h1>
+            <p class="text-gray-400 mt-2">Yeni trendi girin, yapay zeka analiz edip yayına alsın.</p>
         </div>
-    </div>
 
-    <script>
-        // --- AYARLAR ---
-        const SUPABASE_URL = 'https://vcd6z_anjrrylfklscn.supabase.co'; 
-        const SUPABASE_KEY = 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr'; 
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        <form id="trendForm" class="space-y-6">
+            <div>
+                <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-widest">Trend Konusu</label>
+                <input type="text" id="title" placeholder="Örn: AI Portrait Dance" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
+            </div>
 
-        async function aiAnalizYap() {
-            const btn = document.getElementById('btn');
-            const status = document.getElementById('status');
-            const title = document.getElementById('title').value;
-            const mediaUrl = document.getElementById('mediaUrl').value;
-            const category = document.getElementById('category').value;
+            <div>
+                <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-widest">Video veya Görsel URL</label>
+                <input type="url" id="mediaUrl" placeholder="https://tiktok.com/... veya .mp4 linki" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
+                <p class="text-[10px] text-gray-500 mt-2 px-2">* TikTok video linki veya doğrudan .mp4 / .jpg linki yapıştırın.</p>
+            </div>
 
-            // Form kontrolü
-            if(!title || !mediaUrl) {
-                status.innerHTML = "<span class='text-amber-500'>Lütfen boş alan bırakmayın.</span>";
-                return;
-            }
-
-            // Arayüz kilitleme
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-            status.innerHTML = "<span class='text-indigo-400 animate-pulse'>Yapay Zeka analiz ediyor ve yayınlanıyor...</span>";
-
-            try {
-                // 1. ADIM: VERCEL API'SİNDEN AI ANALİZİ AL
-                const aiResponse = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, category })
-                });
-
-                if(!aiResponse.ok) throw new Error("Yapay zeka servisi yanıt vermedi.");
-                
-                const aiData = await aiResponse.json();
-                const yapayZekaYorumu = aiData.analysis;
-
-                // 2. ADIM: SUPABASE'E KAYDET
-                const { error } = await _supabase.from('trends').insert([
-                    {
-                        title: title,
-                        video_url: mediaUrl,
-                        category: category,
-                        ai_analysis: yapayZekaYorumu,
-                        growth_rate: "+%" + Math.floor(Math.random() * 250 + 40)
-                    }
-                ]);
-
-                if(error) throw error;
-
-                // Başarı durumu
-                status.innerHTML = "<span class='text-green-500'>✅ BAŞARILI: Trend ana sayfada yayında!</span>";
-                
-                // Formu temizle
-                document.getElementById('title').value = "";
-                document.getElementById('mediaUrl').value = "";
-
-            } catch (err) {
-                console.error(err);
-                status.innerHTML = "<span class='text-red-500'>Hata: " + err.message + "</span>";
-            } finally {
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            }
-        }
-    </script>
-</body>
-</html>
+            <div>
+                <label class="block text-xs font-bold text-indigo-400 mb-2 uppercase tracking-widest">Kategori</label>
+                <select id="category" class="w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <option value="Teknoloji">Tek
