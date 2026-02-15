@@ -1,63 +1,38 @@
 export default async function handler(req, res) {
-  // 1. Sadece POST isteklerine izin ver (Güvenlik için)
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Yalnızca POST istekleri kabul edilir.' });
-  }
+  // CORS ayarları (Admin panelinin erişebilmesi için)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // 2. Gelen veriyi al
-  const { title, category } = req.body;
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Sadece POST' });
 
-  // Başlık veya kategori boşsa hata döndür
-  if (!title || !category) {
-    return res.status(400).json({ error: 'Başlık ve kategori bilgisi eksik.' });
-  }
-
-  // 3. Vercel'e eklediğin API Anahtarını oku
+  const { title } = req.body;
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
-    console.error("HATA: Vercel üzerinde OPENAI_API_KEY tanımlanmamış!");
-    return res.status(500).json({ error: 'Sistem yapılandırma hatası: API anahtarı bulunamadı.' });
+    return res.status(500).json({ error: 'OpenAI Anahtarı Vercel'de eksik!' });
   }
 
   try {
-    // 4. OpenAI API'sine istek gönder
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // Hızlı ve ucuz model
+        model: "gpt-4o-mini",
         messages: [
-          { 
-            role: "system", 
-            content: "Sen profesyonel bir trend analistisin. Sana verilen trendin neden popüler olduğunu ve e-ticaret/içerik üreticileri için nasıl bir fırsat sunduğunu maksimum 20 kelimelik, etkileyici ve profesyonel bir Türkçe cümle ile açıkla." 
-          },
-          { 
-            role: "user", 
-            content: `Trend Başlığı: ${title}, Kategori: ${category}` 
-          }
-        ],
-        temperature: 0.7,
-      }),
+          { role: "system", content: "Sen bir trend analistisin. Bu trendi 15 kelimede Türkçe analiz et." },
+          { role: "user", content: `Trend: ${title}` }
+        ]
+      })
     });
 
-    const data = await response.json();
-
-    // 5. OpenAI'den gelen hata kontrolü
-    if (data.error) {
-      console.error("OpenAI API Hatası:", data.error.message);
-      return res.status(500).json({ error: `AI Hatası: ${data.error.message}` });
-    }
-
-    // 6. Başarılı sonucu döndür
-    const analysis = data.choices[0].message.content;
-    return res.status(200).json({ analysis: analysis });
-
+    const data = await aiRes.json();
+    return res.status(200).json({ analysis: data.choices[0].message.content });
   } catch (err) {
-    console.error("Sunucu Hatası:", err);
-    return res.status(500).json({ error: 'Analiz sırasında sunucu tarafında bir hata oluştu.' });
+    return res.status(500).json({ error: 'AI Hatası: ' + err.message });
   }
 }
