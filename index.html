@@ -3,80 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrendGlobe AI | Premium Trend Intelligence</title>
+    <title>TrendGlobe AI | Global Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: white; overflow-x: hidden; }
-        .hero-gradient { background: radial-gradient(circle at top, #1e1b4b 0%, #020617 100%); }
-        .trend-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .trend-card:hover { transform: translateY(-12px) scale(1.02); border-color: #6366f1; box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.3); }
-        .ai-badge { background: linear-gradient(90deg, #6366f1, #a855f7); }
-        .video-container::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, #020617 100%); }
-        video { filter: saturate(1.2) brightness(0.9); }
+        .hero-glow { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 80%; height: 500px; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%); z-index: -1; }
+        .trend-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); backdrop-filter: blur(20px); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 3rem; }
+        .trend-card:hover { transform: translateY(-15px); border-color: #6366f1; box-shadow: 0 40px 80px -20px rgba(99, 102, 241, 0.4); }
+        .ai-badge { background: linear-gradient(90deg, #6366f1, #a855f7); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+        .video-container { position: relative; height: 320px; border-radius: 2.5rem; overflow: hidden; background: #000; }
+        .video-container::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, #020617 100%); }
     </style>
 </head>
-<body class="hero-gradient min-h-screen">
-    <nav class="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center border-b border-white/5">
-        <div class="text-3xl font-black tracking-tighter italic text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">TRENDGLOBE</div>
-        <div class="flex items-center gap-6">
-            <span class="text-sm font-bold text-gray-400 cursor-pointer hover:text-white transition">Keşfet</span>
-            <button class="ai-badge px-6 py-2.5 rounded-full font-extrabold text-sm shadow-xl shadow-indigo-500/20 hover:scale-105 transition">PRO'YA GEÇ</button>
+<body class="min-h-screen">
+    <div class="hero-glow"></div>
+
+    <nav class="max-w-7xl mx-auto px-8 py-10 flex justify-between items-center">
+        <div class="text-4xl font-black tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-500">TRENDGLOBE</div>
+        <div class="hidden md:flex gap-8 text-sm font-bold text-gray-400">
+            <a href="#" class="hover:text-white transition">TRENDLER</a>
+            <a href="#" class="hover:text-white transition">ANALİZLER</a>
+            <a href="#" class="hover:text-white transition text-indigo-400">PRO SİNYALLER</a>
         </div>
+        <button class="ai-badge px-8 py-3 rounded-full font-black text-sm shadow-2xl shadow-indigo-500/40 transform hover:scale-105 transition">GİRİŞ YAP</button>
     </nav>
 
-    <header class="max-w-4xl mx-auto text-center py-20 px-6">
-        <h1 class="text-6xl md:text-7xl font-black tracking-tight mb-6 leading-none">
-            Geleceği <span class="text-indigo-500">Yapay Zeka</span> İle İzleyin
+    <header class="max-w-4xl mx-auto text-center py-16 px-6">
+        <h1 class="text-7xl font-black mb-8 leading-tight tracking-tight">
+            Dünyayı <span class="text-indigo-500 underline decoration-indigo-500/30">Değiştiren</span> Trendler
         </h1>
-        <p class="text-xl text-gray-400 font-medium">TikTok ve Reels dünyasındaki viral potansiyeli saniyeler içinde analiz eder.</p>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            Yapay zeka her saniye binlerce videoyu tarar, viral potansiyeli bulur ve size para kazandıracak stratejiyi sunar.
+        </p>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 pb-24">
-        <div id="trendGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            <div class="animate-pulse bg-white/5 h-96 rounded-[3rem]"></div>
-            <div class="animate-pulse bg-white/5 h-96 rounded-[3rem]"></div>
-            <div class="animate-pulse bg-white/5 h-96 rounded-[3rem]"></div>
+    <main class="max-w-7xl mx-auto px-8 pb-32">
+        <div id="trendGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <div class="h-[500px] rounded-[3rem] bg-white/5 animate-pulse"></div>
+            <div class="h-[500px] rounded-[3rem] bg-white/5 animate-pulse"></div>
+            <div class="h-[500px] rounded-[3rem] bg-white/5 animate-pulse"></div>
         </div>
     </main>
 
     <script>
         const _sb = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr');
 
-        async function loadTrends() {
+        async function fetchTrends() {
             const { data, error } = await _sb.from('trends').select('*').order('created_at', { ascending: false });
             const grid = document.getElementById('trendGrid');
             
             if (error || !data || data.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500">Henüz trend eklenmemiş. Admin panelini kullanın.</div>';
+                grid.innerHTML = '<p class="col-span-full text-center text-gray-600">Henüz trend verisi yok. Admin panelinden ilk veriyi yükleyin.</p>';
                 return;
             }
 
             grid.innerHTML = data.map(t => `
-                <div class="trend-card rounded-[3rem] overflow-hidden p-5">
-                    <div class="video-container relative h-72 rounded-[2.5rem] overflow-hidden mb-6 bg-slate-900 shadow-inner">
-                        <video src="${t.video_url}" class="w-full h-full object-cover" autoplay loop muted playsinline></video>
-                        <div class="absolute top-5 left-5 ai-badge px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">AI ANALİZİ</div>
+                <div class="trend-card p-6 group">
+                    <div class="video-container mb-8">
+                        <video src="${t.video_url}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-700" autoplay loop muted playsinline></video>
+                        <div class="absolute top-6 left-6 ai-badge px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-tighter">LIVE AI SCAN</div>
                     </div>
-                    <div class="px-3">
+                    <div class="px-2">
                         <div class="flex justify-between items-center mb-4">
-                            <span class="text-indigo-400 text-[11px] font-extrabold uppercase tracking-widest">${t.category || 'GENEL'}</span>
-                            <span class="bg-green-500/10 text-green-400 text-xs font-black px-3 py-1 rounded-lg">🚀 POPÜLER</span>
+                            <span class="text-indigo-400 text-xs font-black uppercase tracking-widest">${t.category || 'MARKET'}</span>
+                            <div class="flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+                                <span class="text-green-400 text-xs font-bold uppercase">${t.growth_rate || '+124%'}</span>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-black mb-4 tracking-tight leading-tight">${t.title || t.term}</h3>
-                        <div class="bg-indigo-500/5 border border-indigo-500/10 p-5 rounded-[2rem] mb-6">
-                            <p class="text-[10px] text-indigo-400 font-black mb-2 uppercase tracking-tighter italic">Strateji Raporu</p>
-                            <p class="text-sm text-gray-300 font-medium italic leading-relaxed">"${t.ai_analysis || t.ai_summary}"</p>
+                        <h3 class="text-3xl font-extrabold mb-6 leading-none tracking-tighter">${t.title || t.term}</h3>
+                        <div class="bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-[2rem] mb-8 relative">
+                            <div class="absolute -top-3 left-6 bg-indigo-500 text-[9px] font-black px-3 py-1 rounded-md uppercase">AI Insight</div>
+                            <p class="text-sm text-gray-300 italic leading-relaxed font-medium">"${t.ai_analysis || t.ai_summary}"</p>
                         </div>
-                        <button class="w-full py-5 rounded-[2rem] bg-white text-black font-black text-sm hover:bg-indigo-500 hover:text-white transition-all duration-300 shadow-xl shadow-white/5">
-                            ANALİZİ GENİŞLET
+                        <button class="w-full py-5 rounded-[2rem] bg-white text-black font-black hover:bg-indigo-500 hover:text-white transition-all duration-500 shadow-xl">
+                            STRATEJİYİ GÖR
                         </button>
                     </div>
                 </div>
             `).join('');
         }
-        loadTrends();
+        fetchTrends();
     </script>
 </body>
 </html>
