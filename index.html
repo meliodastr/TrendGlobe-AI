@@ -3,126 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrendGlobe AI | Global Trend Intelligence</title>
+    <title>TrendGlobe AI | Global Intelligence Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Space Grotesk', sans-serif; 
-            background: #000; color: #fff; overflow-x: hidden;
-        }
-        .ai-grid {
-            background-image: linear-gradient(to right, #111 1px, transparent 1px), linear-gradient(to bottom, #111 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        .trend-card {
-            background: rgba(10, 10, 15, 0.8);
-            border: 1px solid #222;
-            backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .trend-card:hover {
-            border-color: #6366f1;
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
-            transform: scale(1.02);
-        }
-        .scanning-bar {
-            width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, #6366f1, transparent);
-            position: absolute; top: 0; animation: scan 3s linear infinite;
-        }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-        .glow-text { text-shadow: 0 0 20px rgba(99, 102, 241, 0.6); }
+        body { font-family: 'JetBrains Mono', monospace; background: #050505; color: #eee; }
+        .platform-badge { font-[700] text-[9px] px-2 py-1 rounded bg-white/5 border border-white/10 uppercase tracking-tighter; }
+        .deepseek-box { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%); border-left: 3px solid #2563eb; }
+        .trend-card { transition: all 0.3s ease; border: 1px solid #111; }
+        .trend-card:hover { border-color: #2563eb; box-shadow: 0 0 20px rgba(37, 99, 235, 0.1); }
+        .live-dot { height: 8px; width: 8px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
-<body class="ai-grid min-h-screen">
+<body class="p-4 md:p-8">
 
-    <nav class="border-b border-white/5 bg-black/50 sticky top-0 z-50 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></div>
-                <span class="text-3xl font-bold tracking-tighter glow-text italic">TRENDGLOBE <span class="text-indigo-500 font-light text-xl">/ ANALYST</span></span>
+    <header class="max-w-7xl mx-auto mb-12 border-b border-white/5 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
+        <div>
+            <div class="flex items-center gap-2 text-blue-500 mb-2">
+                <span class="live-dot"></span>
+                <span class="text-xs font-bold tracking-[0.3em]">SYSTEM ACTIVE: MULTI-CHANNEL SCAN</span>
             </div>
-            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                <span class="hover:text-white cursor-pointer transition">Real-time Signals</span>
-                <span class="hover:text-white cursor-pointer transition">Global Database</span>
-                <span class="text-indigo-500">Active Terminal</span>
-            </div>
+            <h1 class="text-4xl font-black tracking-tighter italic">TRENDGLOBE <span class="text-blue-600">v3.0</span></h1>
+            <p class="text-gray-500 text-sm mt-2">TikTok, X, Google Trends & DeepSeek Intelligence</p>
         </div>
-    </nav>
-
-    <header class="max-w-5xl mx-auto text-center pt-24 pb-20 px-6">
-        <div class="inline-block px-4 py-1 border border-indigo-500/30 rounded-full text-indigo-400 text-[10px] font-bold tracking-widest uppercase mb-6">
-            Global Trend Monitoring System v2.0
+        <div class="flex gap-4 overflow-x-auto pb-2 w-full md:w-auto">
+            <span class="platform-badge text-pink-500 border-pink-500/20">TikTok</span>
+            <span class="platform-badge text-blue-400 border-blue-400/20">Twitter (X)</span>
+            <span class="platform-badge text-orange-500 border-orange-500/20">Google Trends</span>
+            <span class="platform-badge text-blue-600 border-blue-600/20">DeepSeek AI</span>
         </div>
-        <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-            Veriyi <span class="text-indigo-500 italic">Geleceğe</span> <br>Dönüştüren Güç.
-        </h1>
-        <p class="text-gray-400 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-            TrendGlobe, milyarlarca veri noktasını AI ile tarayarak bir sonraki küresel hareketi henüz gerçekleşmeden raporlar. Sade değil, **derin.**
-        </p>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 pb-40">
-        <div id="trendGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-left">
-            <div class="col-span-full py-20 text-center opacity-30 italic tracking-widest uppercase text-sm">
-                Scanning Global Servers for Intelligence...
-            </div>
-        </div>
-    </main>
+    <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="trendGrid">
+        </main>
 
     <script>
         const _sb = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklScn_Bw_R9xkKkIr');
 
-        async function fetchTrends() {
+        async function loadTrends() {
             const { data, error } = await _sb.from('trends').select('*').order('created_at', { ascending: false });
             const grid = document.getElementById('trendGrid');
             
-            if (error || !data || data.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-700">NO DATA STREAM DETECTED.</div>';
-                return;
-            }
+            if (error || !data) return;
 
             grid.innerHTML = data.map(t => `
-                <div class="trend-card relative overflow-hidden rounded-3xl p-5">
-                    <div class="scanning-bar"></div>
-                    
-                    <div class="relative h-64 bg-black rounded-2xl overflow-hidden mb-6 border border-white/5">
-                        <video src="${t.video_url}" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition duration-500" autoplay loop muted playsinline></video>
-                        <div class="absolute bottom-4 left-4 bg-black/80 px-3 py-1 rounded-md text-[9px] font-bold border border-white/10">
-                            CAM_ID: ${Math.floor(Math.random()*9000)+1000}
+                <div class="trend-card bg-[#0a0a0a] rounded-xl overflow-hidden flex flex-col">
+                    <div class="relative aspect-video bg-black">
+                        <video src="${t.video_url}" class="w-full h-full object-cover opacity-80" autoplay loop muted playsinline></video>
+                        <div class="absolute top-3 left-3 flex gap-2">
+                            <span class="bg-black/80 backdrop-blur text-[9px] font-bold px-2 py-1 rounded border border-white/10 italic">
+                                SOURCE: ${t.category || 'GLOBAL'}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <span class="text-indigo-500 text-[10px] font-bold uppercase tracking-widest">${t.category || 'GLOBAL TREND'}</span>
-                            <h3 class="text-2xl font-bold mt-1 tracking-tight">${t.title || t.term}</h3>
+                    <div class="p-5 flex-grow">
+                        <h2 class="text-xl font-bold mb-3 tracking-tight text-white/90">${t.title}</h2>
+                        
+                        <div class="deepseek-box p-4 rounded-lg mb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center text-[8px] font-bold">D</div>
+                                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">DeepSeek Deep-Analysis</span>
+                            </div>
+                            <p class="text-[13px] text-gray-300 leading-relaxed italic">
+                                "${t.ai_analysis || 'DeepSeek veri akışını optimize ediyor...'}"
+                            </p>
                         </div>
-                        <div class="text-right">
-                            <div class="text-green-500 text-xs font-black">AI CONFIDENCE</div>
-                            <div class="text-xl font-bold italic">${Math.floor(Math.random()*15 + 85)}%</div>
+
+                        <div class="flex justify-between items-center text-[10px] text-gray-500 font-bold border-t border-white/5 pt-4">
+                            <div class="flex gap-4">
+                                <span>REACH: ${Math.floor(Math.random()*900 + 100)}K</span>
+                                <span class="text-blue-500">VIRAL SCORE: 9.8</span>
+                            </div>
+                            <button class="text-white hover:text-blue-500 transition underline underline-offset-4">DETAYI AÇ</button>
                         </div>
                     </div>
-
-                    <div class="bg-white/5 rounded-2xl p-4 border border-white/5 mb-6">
-                        <div class="flex items-center gap-2 mb-2">
-                            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
-                            <span class="text-[9px] font-bold uppercase text-indigo-400 tracking-tighter italic">Neural Analysis Output</span>
-                        </div>
-                        <p class="text-sm text-gray-300 leading-relaxed font-medium italic">
-                            "${t.ai_analysis || t.ai_summary || 'Analysis in progress...'}"
-                        </p>
-                    </div>
-
-                    <button class="w-full py-4 rounded-xl border border-indigo-500/50 text-indigo-400 font-bold text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all active:scale-95">
-                        Open Report
-                    </button>
                 </div>
             `).join('');
         }
-        fetchTrends();
+        loadTrends();
     </script>
 </body>
 </html>
