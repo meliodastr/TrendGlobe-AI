@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  // CORS ayarları (Admin panelinin erişebilmesi için)
+  // CORS ayarları
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,11 +11,12 @@ export default async function handler(req, res) {
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'OpenAI Anahtarı Vercel'de eksik!' });
+    return res.status(500).json({ error: 'Vercel Ayarlarında OPENAI_API_KEY eksik!' });
   }
 
   try {
-    const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    // OpenAI API çağrısı (Global fetch kullanılır)
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -24,15 +25,20 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: "Sen bir trend analistisin. Bu trendi 15 kelimede Türkçe analiz et." },
+          { role: "system", content: "Sen trend analiz uzmanısın. Trendi 15 kelimede Türkçe açıkla." },
           { role: "user", content: `Trend: ${title}` }
         ]
       })
     });
 
-    const data = await aiRes.json();
+    const data = await response.json();
+    
+    if (data.error) {
+        return res.status(500).json({ error: 'OpenAI Hatası: ' + data.error.message });
+    }
+
     return res.status(200).json({ analysis: data.choices[0].message.content });
   } catch (err) {
-    return res.status(500).json({ error: 'AI Hatası: ' + err.message });
+    return res.status(500).json({ error: 'Server Hatası: ' + err.message });
   }
 }
