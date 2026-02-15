@@ -1,25 +1,73 @@
-// index.html içindeki mevcut map fonksiyonunu bununla güncelle
-grid.innerHTML = data.map(t => `
-    <div class="trend-card bg-[#0a0a0a] rounded-3xl overflow-hidden p-4 border border-white/5 relative">
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-transparent"></div>
-        
-        <div class="relative aspect-video rounded-2xl overflow-hidden bg-slate-900 mb-4">
-            <video src="${t.video_url}" class="w-full h-full object-cover" autoplay loop muted playsinline 
-                   onerror="this.parentElement.innerHTML='<img src=\'https://source.unsplash.com/featured/?technology,ai,abstract\' class=\'w-full h-full object-cover opacity-50\'>'"></video>
-            <div class="absolute top-2 left-2 bg-blue-600 text-[8px] font-bold px-2 py-1 rounded">LIVE SCAN</div>
-        </div>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrendGlobe | 2050 Intelligence Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon: #00f2ff; --neon-purple: #bc13fe; }
+        body { 
+            background: #000205; color: #fff; font-family: 'Rajdhani', sans-serif;
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 50%),
+                linear-gradient(rgba(5, 10, 20, 0.8) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(5, 10, 20, 0.8) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+        .neon-border { position: relative; overflow: hidden; }
+        .neon-border::before {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, var(--neon));
+            animation: rotate 4s linear infinite;
+        }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        .content-inner { position: relative; background: #000; inset: 1px; border-radius: inherit; z-index: 1; }
+        .cyber-line { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--neon), transparent); animation: scanLine 3s infinite; }
+        @keyframes scanLine { 0% { transform: translateY(-100px); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(300px); opacity: 0; } }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
 
-        <h3 class="text-lg font-bold mb-2 tracking-tight">${t.title}</h3>
-
-        <div class="bg-blue-600/5 border-l-2 border-blue-600 p-3 rounded-r-xl mb-4">
-            <p class="text-[12px] text-gray-300 italic">
-                ${t.ai_analysis || "DeepSeek Analizi: Bu trend küresel pazarda %85 büyüme potansiyeline sahip. Teknoloji segmentinde zirve bekleniyor."}
-            </p>
+    <nav class="max-w-[1600px] mx-auto p-6 flex justify-between items-center border-b border-white/5 bg-black/40 backdrop-blur-xl sticky top-0 z-[100]">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 border-2 border-cyan-500 rounded-full flex items-center justify-center animate-spin-slow">
+                <div class="w-6 h-6 border-2 border-purple-500 rounded-full animate-reverse"></div>
+            </div>
+            <h1 class="orbitron text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                TRENDGLOBE <span class="text-[10px] block opacity-50 tracking-[5px] uppercase">Neural Intelligence v5.0</span>
+            </h1>
         </div>
-
-        <div class="flex justify-between items-center text-[10px] font-bold text-gray-500">
-            <span>PLATFORM: ${t.category || 'GLOBAL'}</span>
-            <span class="text-blue-500">STRENGTH: High</span>
+        <div class="flex gap-10 text-[11px] font-bold tracking-[3px] uppercase text-cyan-500/70">
+            <span class="hover:text-cyan-400 transition cursor-pointer">Live Feed</span>
+            <span class="hover:text-cyan-400 transition cursor-pointer">Satellites</span>
+            <span class="text-white border-b border-white/20">Data Center</span>
         </div>
-    </div>
-`).join('');
+    </nav>
+
+    <section class="max-w-7xl mx-auto pt-24 pb-20 text-center px-6">
+        <div class="inline-block px-6 py-2 glass-panel rounded-full border border-cyan-500/20 text-cyan-400 text-[10px] uppercase tracking-[4px] mb-8 animate-pulse">
+            Establishing Secure Connection... Signal Strong
+        </div>
+        <h2 class="orbitron text-6xl md:text-8xl font-black mb-10 leading-none">
+            GELECEK <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">ANALİZİ</span>
+        </h2>
+        <p class="max-w-2xl mx-auto text-gray-500 text-lg font-light tracking-wide">
+            TikTok, X ve DeepSeek verilerini 2050 algoritmalarıyla işleyip küresel trendleri saniyeler içinde simüle ediyoruz. 
+        </p>
+    </section>
+
+    <main class="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-40" id="trendGrid">
+        </main>
+
+    <script>
+        const _sb = supabase.createClient('https://vcd6z_anjrrylfklscn.supabase.co', 'sb_publishable_vcD6Z_aNjRRyLfklSc
